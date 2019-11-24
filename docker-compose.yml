@@ -1,0 +1,78 @@
+version: "3"
+services:
+  web:
+    container_name: web
+    restart: always
+    build: ./web/
+    expose:
+      - "8000"
+    depends_on:
+      - db-postgres
+      - redis
+    environment:
+      DB_HOST: db-postgres
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./web:/data/web
+      - /usr/app/node_modules
+    # command: ["./wait-for-it.sh", "db_postgres:5432", "--", "node", "server.js"]
+    command: ["./wait-for-it.sh", "db-postgres:5432", "--", "npm","run","dev"]
+    networks:
+      - projetsad
+
+  nginx:
+    container_name: nginx
+    restart: always
+    build: ./nginx/
+    ports:
+      - "8000:8000"
+      - "5555:5555"
+    depends_on:
+      - web
+    networks:
+      - projetsad
+
+  db-postgres:
+    container_name: db-postgres
+    restart: always
+    image: postgres:latest
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres:/var/lib/postgresql/data
+    environment:
+      POSTGRES_PASSWORD: password
+      POSTGRES_USER: postgres
+      POSTGRES_DB: postgres_db
+    expose:
+      - "5432"
+    networks:
+      - projetsad
+  
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    depends_on:
+      - db-postgres
+    expose:
+      - "5555"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+      PGADMIN_LISTEN_PORT: 5555
+    networks:
+      - projetsad  
+
+  redis:
+    container_name: redis
+    restart: always
+    image: redis:latest
+    expose:
+      - "6379"
+    networks:
+      - projetsad
+
+networks:
+  projetsad:
+

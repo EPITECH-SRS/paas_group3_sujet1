@@ -1,0 +1,19 @@
+{
+  "name": "web",
+  "version": "1.0.0",
+  "description": "Server NodeJS in Docker",
+  "author": "EPITECH-SRS",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.17.1",
+    "pg": "^7.12.1",
+    "nodemon": "^1.19.4",
+    "redis":"^2.8.0",
+    "connect-redis": "^4.0.3",
+    "express-session": "^1.17.0"
+  }
+}

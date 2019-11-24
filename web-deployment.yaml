@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app
+  labels:
+    app: web
+spec:
+  selector:
+    matchLabels:
+      app: web    
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: web
+    spec:
+      containers:
+      - args:
+        - ./wait-for-it.sh
+        - $(DB_HOST):5432
+        - --
+        - npm
+        - run
+        - dev
+        env:
+        - name: DB_HOST
+          value: db-postgres
+        - name: REDIS_HOST
+          value: redis
+        - name: REDIS_PORT
+          value: "6379"
+        image: thifou/epitech-srs:v1
+        imagePullPolicy: Always
+        ports:
+          - containerPort: 8000
+        name: web
+        volumeMounts:
+        - mountPath: /data/web
+          name: web-claim0
+        - mountPath: /usr/app/node_modules
+          name: web-claim1
+      restartPolicy: Always
+      volumes:
+      - name: web-claim0
+        persistentVolumeClaim:
+          claimName: web-claim0
+      - name: web-claim1
+        persistentVolumeClaim:
+          claimName: web-claim1
+status: {}

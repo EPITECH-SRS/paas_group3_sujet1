@@ -1,0 +1,11 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: db-postgres-pv-claim
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 256Mi
